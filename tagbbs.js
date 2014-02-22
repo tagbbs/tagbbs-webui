@@ -38,11 +38,17 @@ TagBBS.config(function($routeProvider, $locationProvider) {
 
     $locationProvider.html5Mode(false);
 })
-.controller("MainCtrl", function($scope, $location, $route, bbs) {
+.controller("MainCtrl", function($scope, $location, $route, $http, bbs) {
     $scope.server = {
         name: "TagBBS",
         version: "unknown"
     };
+    $scope.client = {
+        version: "unknown"
+    };
+    $http.get("VERSION").success(function(d) {
+        $scope.client.version = d;
+    });
     $scope.user = "";
     $scope.homepage = "/@/post:0";
     $scope.setUser = function(user) {
