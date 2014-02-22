@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="TagBBS" ng-controller="MainCtrl">
 <meta charset="utf-8">
-<title ng-bind="name"></title>
+<title ng-bind="server.name"></title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <!-- Use CDN as much as possible to make repo slimmer-->
 <!-- CSS Framework -->
@@ -12,7 +12,7 @@
 <!-- Markdown Renderer -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/showdown/0.3.1/showdown.min.js"></script>
 <!-- YAML -->
-<script src="http://nodeca.github.io/js-yaml/js/js-yaml.js"></script>
+<script src="https://raw.github.com/nodeca/js-yaml/master/js-yaml.min.js"></script>
 <!-- Post Editor -->
 <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.21.0/codemirror.min.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/3.21.0/codemirror.min.js"></script>
@@ -27,7 +27,7 @@
 <body>
 <aside>
     <ul class="nav">
-        <li ng-show="user"><a href="#{{homepage}}" title="server build: {{version}}"><span class="glyphicon glyphicon-home"></span> {{name}}</a></li>
+        <li ng-show="user"><a href="#{{homepage}}" title="server build: {{server.version}}"><span class="glyphicon glyphicon-home"></span> {{server.name}}</a></li>
         <li ng-show="user"><a href="#/test"><span class="glyphicon glyphicon-list"></span> Test</a></li>
         <li ng-show="user"><a href="#/:"><span class="glyphicon glyphicon-file"></span> Put</a></li>
         <li>&nbsp;</li>
@@ -45,6 +45,10 @@
 <script type="text/ng-template" id="login.html">
 <form role="form" ng-submit="submit()" class="login center-block">
     <div class="alert alert-danger" ng-show="message">{{message}}</div>
+    <div class="form-group">
+    <label>Server</label>
+    <input type="text" class="form-control" placeholder="backend server" ng-model="endpoint">
+    </div>
     <div class="form-group">
     <label>User</label>
     <input type="text" class="form-control" placeholder="user id" ng-model="user">

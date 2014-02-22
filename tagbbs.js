@@ -39,6 +39,10 @@ TagBBS.config(function($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(false);
 })
 .controller("MainCtrl", function($scope, $location, $route, bbs) {
+    $scope.server = {
+        name: "TagBBS",
+        version: "unknown"
+    };
     $scope.user = "";
     $scope.homepage = "/@/post:0";
     $scope.setUser = function(user) {
@@ -53,17 +57,18 @@ TagBBS.config(function($routeProvider, $locationProvider) {
             localStorage.returnPath = "";
         }
     }
-    bbs.version().success(function(d) {
-        $scope.name = d.result.name;
-        $scope.version = d.result.version;
-    });
 })
 .controller("Login", function($scope, $location, bbs) {
+    $scope.endpoint = localStorage.endpoint || "https://secure.thinxer.com:8023";
     $scope.user = "";
     $scope.pass = "";
     $scope.pass2 = "";
     $scope.message = "";
     var redirect = function(d) {
+        bbs.version().success(function(d) {
+            $scope.server.name = d.result.name;
+            $scope.server.version = d.result.version;
+        });
         if (d.result) {
             if (localStorage.returnPath) {
                 $location.url(localStorage.returnPath);
@@ -74,6 +79,8 @@ TagBBS.config(function($routeProvider, $locationProvider) {
         }
     };
     $scope.submit = function() {
+        localStorage.endpoint = $scope.endpoint;
+        bbs.setEndpoint($scope.endpoint);
         bbs.login($scope.user, $scope.pass).success(function(d) {
             if (d.result) {
                 localStorage.sid = d.result;
@@ -85,6 +92,7 @@ TagBBS.config(function($routeProvider, $locationProvider) {
     };
 
     if (localStorage.sid) {
+        bbs.setEndpoint($scope.endpoint);
         $scope.message = "Existing session detected, checking...";
         bbs.session(localStorage.sid);
         bbs.who().success(function(d) {
@@ -375,8 +383,10 @@ return {
        }
     };
 })
-.factory("bbs", function($http, serviceEndpoint) {
+.factory("bbs", function($http) {
     var sid = "";
+    var serviceEndpoint;
+
     var api = function(name, data) {
         data = data || {};
         data.session = sid;
@@ -396,6 +406,9 @@ return {
         return promise;
     };
     return {
+        setEndpoint: function(endpoint) {
+            serviceEndpoint = endpoint;
+        },
         login: function(user, pass) {
             return api("login", {user: user, pass: pass}).success(function(d) {
                 if (d.result) {
@@ -491,7 +504,6 @@ return {
         };
     });
 })
-.value("serviceEndpoint", "https://secure.thinxer.com:8023")
 .factory("isMobile", function() {
     var isMobile = {
         Android: function() {
