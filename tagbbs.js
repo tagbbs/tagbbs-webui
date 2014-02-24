@@ -324,7 +324,7 @@ TagBBS.config(function($routeProvider, $locationProvider) {
         if ($routeParams.reply) header.reply = $routeParams.reply;
         if ($routeParams.thread) header.thread = $routeParams.thread;
         $scope.content = "---\n" + jsyaml.safeDump(header, {flowLevel: 1});
-        $scope.content += "---\nMarkdown Content";
+        $scope.content += "---\n\nMarkdown Content\n";
     }
 
     $scope.submit = function() {
@@ -375,7 +375,10 @@ return {
         link: function (scope, elm, attrs, ngModel) {
             // Disable codemirror for mobile. The touch interface does not seem play well with it.
             if (isMobile.any()) return;
-            var codemirror = CodeMirror.fromTextArea(elm[0])
+            var codemirror = CodeMirror.fromTextArea(elm[0], {
+                viewportMargin: Infinity,
+                lineWrapping: true
+            });
             codemirror.on("change", function(mirror) {
                 var newValue = mirror.getValue();
                 if (newValue !== ngModel.$viewValue) {

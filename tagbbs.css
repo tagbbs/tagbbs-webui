@@ -1,4 +1,11 @@
-.CodeMirror {border: 1px solid gray; font-size:13px}
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+}
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}
 
 body {
   padding-left: 120px;
