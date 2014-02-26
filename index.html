@@ -47,7 +47,7 @@
     <div class="alert alert-danger" ng-show="message">{{message}}</div>
     <div class="form-group">
     <label>Server</label>
-    <input type="text" class="form-control" placeholder="backend server" ng-model="endpoint">
+    <input type="text" class="form-control" placeholder="backend server" ng-model="server.endpoint">
     </div>
     <div class="form-group">
     <label>User</label>
@@ -65,6 +65,10 @@
 <form role="form" ng-submit="submit()" class="login center-block">
     <p>Register
     <div class="alert alert-warning" ng-show="message">{{message}}</div>
+    <div class="form-group">
+    <label>Server</label>
+    <input type="text" class="form-control" placeholder="backend server" ng-model="server.endpoint">
+    </div>
     <div class="form-group">
     <label>User</label>
     <input type="text" class="form-control" placeholder="user id" ng-model="user">
@@ -85,6 +89,10 @@
 <form role="form" ng-submit="submit()" class="login center-block">
     <p>Change Password
     <div class="alert alert-warning" ng-show="message">{{message}}</div>
+    <div class="form-group">
+    <label>Server</label>
+    <input type="text" class="form-control" placeholder="backend server" ng-model="server.endpoint">
+    </div>
     <div class="form-group">
     <label>User</label>
     <input type="text" class="form-control" placeholder="user id" ng-model="user">
