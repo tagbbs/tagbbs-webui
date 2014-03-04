@@ -420,7 +420,7 @@ return {
        }
     };
 })
-.factory("bbs", function($http) {
+.factory("bbs", function($http, $q) {
     var sid = "";
     var serviceEndpoint;
 
@@ -442,6 +442,19 @@ return {
         });
         return promise;
     };
+
+    var wrap = function(promise) {
+        promise.success = function(fn) {
+            promise.then(fn);
+        }
+        promise.error = function(fn) {
+            promise.then(null, fn);
+        }
+        return promise;
+    };
+
+    // TODO revision
+    var postcache = {};
     return {
         setEndpoint: function(endpoint) {
             serviceEndpoint = endpoint;
@@ -473,9 +486,19 @@ return {
             return api("list", {query: query});
         },
         get: function(key) {
-            return api("get", {key: key});
+            if (postcache[key]) {
+                var d = $q.defer();
+                d.resolve({result: postcache[key]});
+                return wrap(d.promise);
+            }
+            return api("get", {key: key}).success(function(d) {
+                if (d.result) {
+                    postcache[key] = d.result;
+                }
+            });
         },
         put: function(key, rev, content) {
+            delete postcache[key];
             return api("put", {key:key, rev: rev, content: content});
         },
         session: function(_sid) {
@@ -513,9 +536,8 @@ return {
             $timeout(function() {
                 if (active > 0) {
                     ngProgressLite.start();
-                    ngProgressLite.inc();
                 }
-            }, 100);
+            }, 300);
         };
         var finish = function() {
             active--;
@@ -523,7 +545,7 @@ return {
                 if (active == 0) {
                     ngProgressLite.done();
                 }
-            }, 100);
+            }, 10);
         };
         return {
             'request': function(config) {
