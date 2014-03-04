@@ -283,34 +283,41 @@ TagBBS.config(function($routeProvider, $locationProvider) {
         return $scope.post.header && $scope.post.header.thread || $scope.key;
     };
     // TODO cache the list
+    var list = bbs.list($scope.query() + " @" + $scope.key + " -10 +11");
+    var less = function(a, b) {
+        if (a.length != b.length) return a.length < b.length;
+        return a < b;
+    }
     $scope.prev = function() {
-        var q = $scope.query();
-        bbs.list(q + " @" + $scope.key + " -10").success(function(d) {
+        list.success(function(d) {
             var posts = d.result && d.result.posts || [];
-            if (posts.length == 0) {
-                $scope.message = "the end of the list...";
-                $timeout(function() {
-                    $scope.message = "";
-                }, 2000);
-                return;
-            } else {
-                $location.url("/" + q + "/" + posts[posts.length-1].key);
+            for (var i=posts.length-1; i>=0; i--) {
+                if (less(posts[i].key, $scope.key)) {
+                    $location.url("/" + $scope.query() + "/" + posts[i].key);
+                    return
+                }
             }
+            $scope.message = "the end of the list...";
+            $timeout(function() {
+                $scope.message = "";
+            }, 2000);
+
         });
     };
     $scope.next = function() {
-        var q = $scope.query();
-        bbs.list(q + " @" + $scope.key + " --1 +11").success(function(d) {
+        list.success(function(d) {
             var posts = d.result && d.result.posts || [];
-            if (posts.length == 0) {
-                $scope.message = "the end of the list...";
-                $timeout(function() {
-                    $scope.message = "";
-                }, 2000);
-                return;
-            } else {
-                $location.url("/" + q + "/" + posts[0].key);
+            for (var i=0; i<posts.length; i++) {
+                if (less($scope.key, posts[i].key)) {
+                    $location.url("/" + $scope.query() + "/" + posts[i].key);
+                    return
+                }
             }
+            $scope.message = "the end of the list...";
+            $timeout(function() {
+                $scope.message = "";
+            }, 2000);
+
         });
     };
     $scope.$watch("key", function(key) {
